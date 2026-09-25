@@ -356,6 +356,17 @@ class GeminiRealtimeConfig(BaseRealtimeConfig):
                 speech_config = _gemini_live_speech_config(value)
                 if speech_config:
                     optional_params["generationConfig"]["speechConfig"] = speech_config
+            elif key == "avatar_config" and value is not None:
+                def _snake_to_camel(d: dict) -> dict:
+                    out = {}
+                    for k, v in d.items():
+                        if isinstance(v, dict):
+                            v = _snake_to_camel(v)
+                        parts = k.split('_')
+                        camel_k = parts[0] + ''.join(word.capitalize() for word in parts[1:])
+                        out[camel_k] = v
+                    return out
+                optional_params["avatarConfig"] = _snake_to_camel(value)
         if len(optional_params["generationConfig"]) == 0:
             optional_params.pop("generationConfig")
         return optional_params
